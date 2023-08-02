@@ -3,8 +3,33 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 
-from fastai.layers import *
-from fastai.core import *
+from fastai.layers import Flatten, Lambda
+# from fastai.core import *
+
+from typing import Iterable, Optional
+
+def listify(p=None, q=None):
+    "Make `p` listy and the same length as `q`."
+    if p is None: p=[]
+    elif isinstance(p, str):          p = [p]
+    elif not isinstance(p, Iterable): p = [p]
+    #Rank 0 tensors in PyTorch are Iterable but don't have a length.
+    else:
+        try: a = len(p)
+        except: p = [p]
+    n = q if type(q)==int else len(p) if q is None else len(q)
+    if len(p)==1: p = p * n
+    assert len(p)==n, f'List len mismatch ({len(p)} vs {n})'
+    return list(p)
+
+
+def bn_drop_lin(n_in:int, n_out:int, bn:bool=True, p:float=0., actn:Optional[nn.Module]=None):
+    "Sequence of batchnorm (if `bn`), dropout (with `p`) and linear (`n_in`,`n_out`) layers followed by `actn`."
+    layers = [nn.BatchNorm1d(n_in)] if bn else []
+    if p != 0: layers.append(nn.Dropout(p))
+    layers.append(nn.Linear(n_in, n_out))
+    if actn is not None: layers.append(actn)
+    return layers
 
 class AdaptiveConcatPoolRNN(nn.Module):
     def __init__(self, bidirectional):

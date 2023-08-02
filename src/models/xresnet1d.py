@@ -2,12 +2,26 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from models.basic_conv1d import create_head1d, Flatten
+from src.models.basic_conv1d import create_head1d, Flatten
 
 from enum import Enum
 import re
 #delegates
 import inspect
+
+from typing import Optional
+
+from fastai.layers import *
+
+from torch.nn.utils import weight_norm, spectral_norm
+
+def bn_drop_lin(n_in:int, n_out:int, bn:bool=True, p:float=0., actn:Optional[nn.Module]=None):
+    "Sequence of batchnorm (if `bn`), dropout (with `p`) and linear (`n_in`,`n_out`) layers followed by `actn`."
+    layers = [nn.BatchNorm1d(n_in)] if bn else []
+    if p != 0: layers.append(nn.Dropout(p))
+    layers.append(nn.Linear(n_in, n_out))
+    if actn is not None: layers.append(actn)
+    return layers
 
 def delegates(to=None, keep=False):
     "Decorator: replace `**kwargs` in signature with params from `to`"

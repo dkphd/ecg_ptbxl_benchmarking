@@ -3,11 +3,36 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 
-from fastai.layers import *
-from fastai.core import *
+import collections
+from typing import Optional, Collection, Iterable
+
+from fastai.layers import Flatten
 
 ##############################################################################################################################################
 # utility functions
+
+def listify(p=None, q=None):
+    "Make `p` listy and the same length as `q`."
+    if p is None: p=[]
+    elif isinstance(p, str):          p = [p]
+    elif not isinstance(p, Iterable): p = [p]
+    #Rank 0 tensors in PyTorch are Iterable but don't have a length.
+    else:
+        try: a = len(p)
+        except: p = [p]
+    n = q if type(q)==int else len(p) if q is None else len(q)
+    if len(p)==1: p = p * n
+    assert len(p)==n, f'List len mismatch ({len(p)} vs {n})'
+    return list(p)
+
+
+def bn_drop_lin(n_in:int, n_out:int, bn:bool=True, p:float=0., actn:Optional[nn.Module]=None):
+    "Sequence of batchnorm (if `bn`), dropout (with `p`) and linear (`n_in`,`n_out`) layers followed by `actn`."
+    layers = [nn.BatchNorm1d(n_in)] if bn else []
+    if p != 0: layers.append(nn.Dropout(p))
+    layers.append(nn.Linear(n_in, n_out))
+    if actn is not None: layers.append(actn)
+    return layers
 
 
 def _conv1d(in_planes,out_planes,kernel_size=3, stride=1, dilation=1, act="relu", bn=True, drop_p=0):
@@ -85,7 +110,7 @@ def weight_init(m):
         stdv2=math.sqrt(1./m.w2.size[1])
         nn.init.normal_(m.w2,0.,stdv2)
 
-def create_head1d(nf:int, nc:int, lin_ftrs:Optional[Collection[int]]=None, ps:Floats=0.5, bn_final:bool=False, bn:bool=True, act="relu", concat_pooling=True):
+def create_head1d(nf:int, nc:int, lin_ftrs:Optional[Collection[int]]=None, ps:float=0.5, bn_final:bool=False, bn:bool=True, act="relu", concat_pooling=True):
     "Model head that takes `nf` features, runs through `lin_ftrs`, and about `nc` classes; added bn and act here"
     lin_ftrs = [2*nf if concat_pooling else nf, nc] if lin_ftrs is None else [2*nf if concat_pooling else nf] + lin_ftrs + [nc] #was [nf, 512,nc]
     ps = listify(ps)
@@ -125,7 +150,7 @@ class basic_conv1d(nn.Sequential):
         #head #inplace=True leads to a runtime error see ReLU+ dropout https://discuss.pytorch.org/t/relu-dropout-inplace/13467/5
         self.headless = headless
         if(headless is True):
-            head = nn.Sequential(nn.AdaptiveAvgPool1d(1),Flatten())
+            head = nn.Sequential(nn.AdaptiveAvgPool1d(1), Flatten())
         else:
             head=create_head1d(filters[-1], nc=num_classes, lin_ftrs=lin_ftrs_head, ps=ps_head, bn_final=bn_final_head, bn=bn_head, act=act_head, concat_pooling=concat_pooling)
         layers.append(head)

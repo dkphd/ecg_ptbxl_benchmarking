@@ -114,7 +114,7 @@ def apply_thresholds(preds, thresholds):
 # DATA PROCESSING STUFF
 
 def load_dataset(path, sampling_rate, release=False):
-    if path.split('/')[-2] == 'ptbxl':
+    if 'ptbxl' in str(path).lower():
         # load and convert annotation data
         Y = pd.read_csv(path+'ptbxl_database.csv', index_col='ecg_id')
         Y.scp_codes = Y.scp_codes.apply(lambda x: ast.literal_eval(x))
@@ -399,7 +399,7 @@ def generate_ptbxl_summary_table(selection=None, folder='../output/'):
     md_source = ''
     for i, e in enumerate(exps):
         md_source += '\n '+titles[i]+' \n \n'
-        md_source += '| Model | AUC &darr; | paper/source | code | \n'
+        md_source += '| Model | AUC &darr; | paper/source | src | \n'
         md_source += '|---:|:---|:---|:---| \n'
         for row in df_rest[['Method', e+'_AUC']].sort_values(e+'_AUC', ascending=False).values:
             md_source += '| ' + row[0].replace('fastai_', '') + ' | ' + row[1] + ' | [our work]('+our_work+') | [this repo]('+our_repo+')| \n'
@@ -435,7 +435,7 @@ def ICBEBE_table(selection=None, folder='../output/'):
     our_work = 'https://arxiv.org/abs/2004.13701'
     our_repo = 'https://github.com/helme/ecg_ptbxl_benchmarking/'
 
-    md_source = '| Model | AUC &darr; |  F_beta=2 | G_beta=2 | paper/source | code | \n'
+    md_source = '| Model | AUC &darr; |  F_beta=2 | G_beta=2 | paper/source | src | \n'
     md_source += '|---:|:---|:---|:---|:---|:---| \n'
     for i, row in enumerate(df_rest[cols].values):
         md_source += '| ' + df_rest.index[i].replace('fastai_', '') + ' | ' + row[0] + ' | ' + row[1] + ' | ' + row[2] + ' | [our work]('+our_work+') | [this repo]('+our_repo+')| \n'

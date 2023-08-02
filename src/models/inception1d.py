@@ -3,10 +3,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 
-from fastai.layers import *
-from fastai.core import *
+# from fastai.layers import *
+# from fastai.core import *
 
-from models.basic_conv1d import AdaptiveConcatPool1d,create_head1d
+from src.models.basic_conv1d import AdaptiveConcatPool1d, create_head1d
+
+from fastai.layers import Flatten
+
+from typing import Optional
 
 ########################################################################################################
 # Inception time inspired by https://github.com/hfawaz/InceptionTime/blob/master/classifiers/inception.py and https://github.com/tcapelle/TimeSeries_fastai/blob/master/inception.py
@@ -17,6 +21,9 @@ def conv(in_planes, out_planes, kernel_size=3, stride=1):
                      padding=(kernel_size-1)//2, bias=False)
 
 def noop(x): return x
+
+
+
 
 class InceptionBlock1d(nn.Module):
     def __init__(self, ni, nb_filters, kss, stride=1, act='linear', bottleneck_size=32):

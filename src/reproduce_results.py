@@ -12,13 +12,13 @@ def main():
     outputfolder = '../output/'
 
     models = [
-        conf_fastai_xresnet1d101,
-        conf_fastai_resnet1d_wang,
-        conf_fastai_lstm,
-        conf_fastai_lstm_bidir,
+        # conf_fastai_xresnet1d101,
+        # conf_fastai_resnet1d_wang,
+        # conf_fastai_lstm,
+        # conf_fastai_lstm_bidir,
         conf_fastai_fcn_wang,
-        conf_fastai_inception1d,
-        conf_wavelet_standard_nn,
+        # conf_fastai_inception1d,
+        # conf_wavelet_standard_nn,
         ]
 
     ##########################################
@@ -27,11 +27,11 @@ def main():
 
     experiments = [
         ('exp0', 'all'),
-        ('exp1', 'diagnostic'),
-        ('exp1.1', 'subdiagnostic'),
-        ('exp1.1.1', 'superdiagnostic'),
-        ('exp2', 'form'),
-        ('exp3', 'rhythm')
+        # ('exp1', 'diagnostic'),
+        # ('exp1.1', 'subdiagnostic'),
+        # ('exp1.1.1', 'superdiagnostic'),
+        # ('exp2', 'form'),
+        # ('exp3', 'rhythm')
        ]
 
     for name, task in experiments:
@@ -43,17 +43,17 @@ def main():
     # generate greate summary table
     utils.generate_ptbxl_summary_table()
 
-    ##########################################
-    # EXPERIMENT BASED ICBEB DATA
-    ##########################################
-
-    e = SCP_Experiment('exp_ICBEB', 'all', datafolder_icbeb, outputfolder, models)
-    e.prepare()
-    e.perform()
-    e.evaluate()
-
-    # generate greate summary table
-    utils.ICBEBE_table()
+    # ##########################################
+    # # EXPERIMENT BASED ICBEB DATA
+    # ##########################################
+    #
+    # e = SCP_Experiment('exp_ICBEB', 'all', datafolder_icbeb, outputfolder, models)
+    # e.prepare()
+    # e.perform()
+    # e.evaluate()
+    #
+    # # generate greate summary table
+    # utils.ICBEBE_table()
 
 if __name__ == "__main__":
     main()

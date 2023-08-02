@@ -1,6 +1,5 @@
-from utils import utils
+from src.utils import utils
 import os
-import pickle
 import pandas as pd
 import numpy as np
 import multiprocessing
@@ -64,6 +63,11 @@ class SCP_Experiment():
         self.y_val.dump(self.outputfolder + self.experiment_name+ '/data/y_val.npy')
         self.y_test.dump(self.outputfolder + self.experiment_name+ '/data/y_test.npy')
 
+        # save train and test features
+        self.X_train.dump(self.outputfolder + self.experiment_name+ '/data/X_train.npy')
+        self.X_val.dump(self.outputfolder + self.experiment_name+ '/data/X_val.npy')
+        self.X_test.dump(self.outputfolder + self.experiment_name+ '/data/X_test.npy')
+
         modelname = 'naive'
         # create most naive predictions via simple mean in training
         mpath = self.outputfolder+self.experiment_name+'/models/'+modelname+'/'
@@ -95,14 +99,14 @@ class SCP_Experiment():
             n_classes = self.Y.shape[1]
             # load respective model
             if modeltype == 'WAVELET':
-                from models.wavelet import WaveletModel
+                from src.models.wavelet import WaveletModel
                 model = WaveletModel(modelname, n_classes, self.sampling_frequency, mpath, self.input_shape, **modelparams)
             elif modeltype == "fastai_model":
-                from models.fastai_model import fastai_model
+                from src.models.fastai_model import fastai_model
                 model = fastai_model(modelname, n_classes, self.sampling_frequency, mpath, self.input_shape, **modelparams)
             elif modeltype == "YOUR_MODEL_TYPE":
                 # YOUR MODEL GOES HERE!
-                from models.your_model import YourModel
+                from src.models.your_model import YourModel
                 model = YourModel(modelname, n_classes, self.sampling_frequency, mpath, self.input_shape, **modelparams)
             else:
                 assert(True)

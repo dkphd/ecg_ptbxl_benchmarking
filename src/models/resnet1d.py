@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import math
 
 from fastai.layers import Flatten
-from models.basic_conv1d import create_head1d
+from src.models.basic_conv1d import create_head1d
 ###############################################################################################
 # Standard resnet
 
