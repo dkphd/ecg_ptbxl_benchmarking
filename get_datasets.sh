@@ -23,5 +23,5 @@ unzip TrainingSet1.zip
 unzip TrainingSet2.zip
 unzip TrainingSet3.zip
 cd ..
-python code/utils/convert_ICBEB.py
+python src/utils/convert_ICBEB.py
 cp data/ptbxl/scp_statements.csv data/ICBEB/
